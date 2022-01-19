@@ -1,0 +1,5 @@
+img: img.tsv
+hw: hw.tsv
+label: label_danfeiX_overlap.new.tsv
+labelmap: VG-SGG-dicts-danfeiX-overlap.json
+linelist: label_danfeiX_overlap.relation.train.linelist.tsv

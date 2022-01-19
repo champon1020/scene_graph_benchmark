@@ -41,3 +41,9 @@ dist/
 pretrained_model/
 run_philly.py
 vrd_philly_tools_submit.yaml
+
+tools/actiongenome/data
+tools/actiongenome/ag/annotations/*
+tools/actiongenome/ag/frames/*
+!tools/actiongenome/ag/annotations/frame_list.txt
+results/*

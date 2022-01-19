@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 import os.path as op
 
 def config_tsv_dataset_args(cfg, dataset_file, factory_name=None, is_train=True):
@@ -26,7 +26,7 @@ def config_tsv_dataset_args(cfg, dataset_file, factory_name=None, is_train=True)
     else:
         if "openimages" in dataset_file:
             tsv_dataset_name = "OpenImagesVRDTSVDataset"
-        elif "visualgenome" in dataset_file or "gqa" in dataset_file:
+        elif "visualgenome" in dataset_file or "gqa" in dataset_file or "actiongenome" in dataset_file:
             tsv_dataset_name = "VGTSVDataset"
 
     args['args'] = cfg
