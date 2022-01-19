@@ -1,11 +1,11 @@
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 # Adapted from https://github.com/danfeiX/scene-graph-TF-release (Danfei Xu) and https://github.com/rowanz/neural-motifs (Rowan Zellers).
 import torch
 import numpy as np
 from functools import reduce
 from .box import bbox_overlaps
 
-MODES = ('sgdet', 'sgcls', 'predcls')
+MODES = ('sgdet', 'phrdet')
 
 np.set_printoptions(precision=3)
 
@@ -14,7 +14,7 @@ class BasicSceneGraphEvaluator:
     def __init__(self, mode, multiple_preds=False):
         self.result_dict = {}
         self.mode = mode
-        self.result_dict[self.mode + '_recall'] = {20: [], 50: [], 100: []}
+        self.result_dict[self.mode + '_recall'] = {1: [], 3: [], 5: [], 10: [], 20: [], 50: [], 100: []}
         self.multiple_preds = multiple_preds
 
     @classmethod

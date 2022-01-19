@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 import os
 import json
 from collections import defaultdict
@@ -24,13 +24,22 @@ def do_sg_evaluation(dataset, predictions, output_folder, logger):
 
     evaluator = BasicSceneGraphEvaluator.all_modes(multiple_preds=False)
 
-    top_Ns = [20, 50, 100]
-    mode = "sgdet"
+    danfei_metric = {}
+    rowan_metric = {}
+    for mode in ['sgdet', 'phrdet']:
+        metric = sg_evaluation_by_mode(mode, evaluator, predict_dicts, gt_dicts, logger)
+        danfei_metric.update(metric["danfei_metric"])
+        rowan_metric.update(metric["rowan_metric"])
+
+    return {"danfei_metric": danfei_metric, "rowan_metric": rowan_metric}
+
+def sg_evaluation_by_mode(mode, evaluator, predict_dicts, gt_dicts, logger):
+    top_Ns = [1, 3, 5, 10, 20, 50, 100]
     result_dict = {}
     danfei_metric = {}
     rowan_metric = {}
 
-    result_dict[mode + '_recall'] = {20: [], 50: [], 100: []}
+    result_dict[mode + '_recall'] = {1: [], 3: [], 5: [], 10: [], 20: [], 50: [], 100: []}
     for image_key, gt_boxlist in gt_dicts.items():
         sg_prediction = predict_dicts[image_key]
         if len(sg_prediction)==0:
@@ -87,6 +96,10 @@ def do_sg_evaluation(dataset, predictions, output_folder, logger):
     rowan_metric.update(rowan_nums)
 
     logger.warning('=====================' + mode + '(IMP)' + '=========================')
+    logger.warning("{}-recall@1: {}".format(mode, np.mean(np.array(result_dict[mode + '_recall'][1]))))
+    logger.warning("{}-recall@3: {}".format(mode, np.mean(np.array(result_dict[mode + '_recall'][3]))))
+    logger.warning("{}-recall@5: {}".format(mode, np.mean(np.array(result_dict[mode + '_recall'][5]))))
+    logger.warning("{}-recall@10: {}".format(mode, np.mean(np.array(result_dict[mode + '_recall'][10]))))
     logger.warning("{}-recall@20: {}".format(mode, np.mean(np.array(result_dict[mode + '_recall'][20]))))
     logger.warning("{}-recall@50: {}".format(mode, np.mean(np.array(result_dict[mode + '_recall'][50]))))
     logger.warning("{}-recall@100: {}".format(mode, np.mean(np.array(result_dict[mode + '_recall'][100]))))
@@ -113,7 +126,7 @@ def evaluate(gt_classes, gt_boxes, gt_rels,
 
     if gt_rels.ne(0).sum() == 0:
         return (None, None)
-    
+
     if len(rel_inds) == 0:
         for k in result_dict[mode + '_recall']:
             result_dict[mode + '_recall'][k].append(0)
@@ -178,7 +191,7 @@ def evaluate(gt_classes, gt_boxes, gt_rels,
         classes = obj_labels.numpy()  # np.argmax(class_preds, 1)
         class_scores = obj_scores.numpy()
         boxes = gt_boxes
-    elif mode == 'sgdet' or mode == 'sgdet+':
+    elif mode == 'sgdet' or mode == 'phrdet':
         # if scene graph detection task
         # use preicted boxes and predicted classes
         classes = obj_labels.numpy()  # np.argmax(class_preds, 1)
