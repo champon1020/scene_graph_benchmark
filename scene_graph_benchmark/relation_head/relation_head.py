@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 """
 Relation head for predicting relationship between object pairs.
 """
@@ -69,7 +69,7 @@ class ROIRelationHead(torch.nn.Module):
             else:
                 self.freq_dist = torch.log(self.freq_dist + 1e-3)
                 self.freq_bias = FrequencyBias(self.freq_dist)
-    
+
     def to(self, device, **kwargs):
         super(ROIRelationHead, self).to(device, **kwargs)
         if self.cfg.MODEL.USE_FREQ_PRIOR or self.use_bias:
@@ -115,7 +115,7 @@ class ROIRelationHead(torch.nn.Module):
             proposal_pairs.append(proposal_pairs_per_image)
 
         return proposal_pairs
-    
+
     def _force_relation_pairs(self, targets):
         proposal_pairs = []
         for targets_per_image in targets:
@@ -159,21 +159,22 @@ class ROIRelationHead(torch.nn.Module):
             else:
                 with torch.no_grad():
                     if self.cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.USE_FLAG:
-                        proposal_pairs = self.loss_evaluator.contrastive_loss_sample(self.cfg, proposals, targets)
+                        # proposal_pairs = self.loss_evaluator.contrastive_loss_sample(self.cfg, proposals, targets)
+                        proposal_pairs = [self.loss_evaluator.contrastive_loss_sample(self.cfg, [p], [t])[0] for p, t in zip(proposals, targets)]
                     else:
                         # num relations sampled: ROI_HEADS.BATCH_SIZE_PER_IMAGE
                         # fraction of positive: ROI_HEADS.POSITIVE_FRACTION
                         proposal_pairs = self.loss_evaluator.subsample(proposals, targets)
-            
+
             if self.cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.USE_FLAG or self.cfg.MODEL.ROI_RELATION_HEAD.CONCATENATE_PROPOSAL_GT:
-                fields = ['box_features', 'labels', 'gt_labels']
+                fields = ['box_features', 'labels']
                 # if self.cfg.TEST.OUTPUT_SCORES_ALL:
                 #     fields.append('scores_all')
                 #     fields.append('boxes_all')
                 if self.cfg.MODEL.ROI_RELATION_HEAD.SEPERATE_SO_FEATURE_EXTRACTOR:
                     fields += ['subj_box_features', 'obj_box_features']
                 proposals = [cat_boxlist_with_fields([proposal_per_image, target], fields) for proposal_per_image, target in zip(proposals, targets)]
-            
+
             if self.cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.USE_FLAG:
                 self.loss_evaluator.contrastive_proposal_pair_transform(proposals, proposal_pairs)
 

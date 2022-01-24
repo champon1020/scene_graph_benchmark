@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 import numpy as np
 import torch
 from torch.nn import functional as F
@@ -222,13 +222,13 @@ class FastRCNNLossComputation(object):
                                       'inds_reverse_obj_pos']
             blob = {k: [] for k in output_blob_names}
             blobs.append(blob)
-        
+
         add_rel_blobs(cfg, blobs, proposals, targets)
 
         return blobs
 
     def contrastive_loss_sample(self, cfg, proposals, targets):
-        """Reldn Contrastive loss: generate a random sample of RoIs comprising foreground 
+        """Reldn Contrastive loss: generate a random sample of RoIs comprising foreground
         and background examples.
         """
         proposal_box_pairs = []
@@ -320,7 +320,7 @@ class FastRCNNLossComputation(object):
 
         self._proposal_pairs = proposal_pairs
         return proposal_pairs
-    
+
     def contrastive_proposal_pair_transform(self, proposals, proposal_pairs):
         for proposal_per_image, proposal_pairs_per_image in zip(proposals, proposal_pairs):
             device = proposal_per_image.bbox.device
@@ -334,7 +334,7 @@ class FastRCNNLossComputation(object):
             pair_obj_iou = boxlist_iou(proposal_sub_obj, proposal_per_image)
             vals, inds = torch.max(pair_obj_iou, 1)
             assert torch.min(vals) > 0.99, "Some sub/obj is not from proposals/targets!"
-            
+
             rel_ind_i = torch.cat((inds[0::2].view(-1, 1), inds[1::2].view(-1, 1)), 1).to(device)
             proposal_pairs_per_image.add_field("idx_pairs", rel_ind_i)
 
@@ -372,10 +372,11 @@ class FastRCNNLossComputation(object):
     def obj_classification_loss(self, proposals, class_logits):
         class_logits = cat(class_logits, dim=0)
         device = class_logits.device
-        labels = cat([proposal.get_field("gt_labels") for proposal in proposals], dim=0)
+        # labels = cat([proposal.get_field("gt_labels") for proposal in proposals], dim=0)
+        labels = cat([proposal.get_field("labels") for proposal in proposals], dim=0)
         classification_loss = F.cross_entropy(class_logits, labels)
         return classification_loss
-    
+
     def cross_entropy_losses(self, class_logits):
         class_logits = cat(class_logits, dim=0)
         device = class_logits.device
@@ -429,7 +430,7 @@ class FastRCNNLossComputation(object):
             prd_probs_obj_pos, binary_labels_obj_pos_int32, inds_unique_obj_pos, inds_reverse_obj_pos)
         obj_contrastive_loss = F.margin_ranking_loss(obj_pair_pos_batch, obj_pair_neg_batch, obj_target, \
             margin=cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.NODE_CONTRASTIVE_MARGIN)
-        
+
         return sbj_contrastive_loss, obj_contrastive_loss
 
     def reldn_so_contrastive_losses(self, cfg, class_logits, margin=0.2):
@@ -474,7 +475,7 @@ class FastRCNNLossComputation(object):
             sbj_labels_obj_pos_int32, obj_labels_obj_pos_int32, 'o')
         obj_so_contrastive_loss = F.margin_ranking_loss(obj_pair_pos_batch, obj_pair_neg_batch, obj_target, \
             margin=cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.NODE_CONTRASTIVE_SO_AWARE_MARGIN)
-        
+
         return sbj_so_contrastive_loss, obj_so_contrastive_loss
 
     def reldn_p_contrastive_losses(self, cfg, class_logits, margin=0.2):
@@ -523,7 +524,7 @@ class FastRCNNLossComputation(object):
             prd_labels_obj_pos_int32)
         obj_p_contrastive_loss = F.margin_ranking_loss(obj_pair_pos_batch, obj_pair_neg_batch, obj_target, \
             margin=cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.NODE_CONTRASTIVE_P_AWARE_MARGIN)
-        
+
         return sbj_p_contrastive_loss, obj_p_contrastive_loss
 
     def split_pos_neg_spo_agnostic(self, prd_probs, binary_labels_pos, inds_unique_pos, inds_reverse_pos):
@@ -548,7 +549,7 @@ class FastRCNNLossComputation(object):
             pair_neg_batch = torch.cat((pair_neg_batch, max_prd_pos_probs_i_pair_neg.unsqueeze(0)))
 
         target = torch.ones_like(pair_pos_batch).cuda(device_id)
-            
+
         return pair_pos_batch, pair_neg_batch, target
 
     def split_pos_neg_so_aware(self, cfg, prd_probs, binary_labels_pos, inds_unique_pos, inds_reverse_pos, sbj_labels_pos, obj_labels_pos, s_or_o):
@@ -664,7 +665,7 @@ class FastRCNNLossComputation(object):
                 pair_neg_batch = torch.cat((pair_neg_batch, max_prd_pos_probs_i_neg_j.unsqueeze(0)))
 
         target = torch.ones_like(pair_pos_batch).cuda(device_id)
-            
+
         return pair_pos_batch, pair_neg_batch, target
 
 

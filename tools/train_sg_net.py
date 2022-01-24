@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 r"""
 Basic training script for PyTorch
 """
@@ -92,7 +92,7 @@ def train(cfg, local_rank, distributed):
         data_loader_val = None
 
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
-    
+
     meters = MetricLogger(delimiter="  ")
 
     do_train(
@@ -218,7 +218,7 @@ def main():
     model = train(cfg, args.local_rank, args.distributed)
 
     if not args.skip_test:
-        run_test(cfg, model, args.distributed, model_name="model_final")
+        run_test(cfg, model, args.distributed)
 
 
 if __name__ == "__main__":

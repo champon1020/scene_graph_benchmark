@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 """
 Implements the Scene Parser framework
 """
@@ -63,7 +63,7 @@ class SceneParser(GeneralizedRCNN):
         self.force_relations = cfg.MODEL.ROI_RELATION_HEAD.FORCE_RELATIONS
         if cfg.MODEL.RELATION_ON and self.cfg.MODEL.ROI_RELATION_HEAD.ALGORITHM in SCENE_PAESER_DICT:
             self.relation_head = build_roi_relation_head(cfg, feature_dim)
-        
+
         if cfg.MODEL.ATTRIBUTE_ON:
             self.attribute_head = build_roi_attribute_head(cfg, feature_dim)
 
@@ -74,7 +74,7 @@ class SceneParser(GeneralizedRCNN):
             p.requires_grad = False
         for p in self.roi_heads.parameters():
             p.requires_grad = False
-        
+
         if not self.cfg.MODEL.ROI_RELATION_HEAD.SHARE_BOX_FEATURE_EXTRACTOR:
             if self.cfg.MODEL.ROI_RELATION_HEAD.SEPERATE_SO_FEATURE_EXTRACTOR:
                 self.subj_feature_extractor = make_roi_relation_box_feature_extractor(cfg, feature_dim)
@@ -146,7 +146,7 @@ class SceneParser(GeneralizedRCNN):
             obj_scores = result_obj_i.get_field("scores").cpu().numpy()
             rel_inds = result_pred_i.get_field("idx_pairs").cpu().numpy()
             pred_scores = result_pred_i.get_field("scores").cpu().numpy()[:, 1:]
-            
+
             det_labels_prd = np.argsort(-pred_scores, axis=1)
             det_scores_prd = -np.sort(-pred_scores, axis=1)
 
@@ -164,7 +164,7 @@ class SceneParser(GeneralizedRCNN):
             # filter out bad prediction
             inds = result_pred_i.get_field('scores') > self.cfg.MODEL.ROI_RELATION_HEAD.POSTPROCESS_SCORE_THRESH
             result_pred_i = result_pred_i[inds]
-            
+
             result_obj_new.append(result_obj_i)
             result_pred_new.append(result_pred_i)
         return result_obj_new, result_pred_new
@@ -221,7 +221,7 @@ class SceneParser(GeneralizedRCNN):
             proposal_losses = {}
             if targets is not None or len(targets) != 0:
                 predictions = self.roi_heads['box'].loss_evaluator.prepare_labels(predictions, targets)
-        
+
         if (self.force_relations or self.cfg.MODEL.ROI_RELATION_HEAD.MODE=='predcls') and not self.training:
             predictions = targets
             for pred in predictions:
@@ -296,7 +296,7 @@ class SceneParser(GeneralizedRCNN):
                 #     gt_boxes = target.bbox
                 #     gt_pseudo_boxes_all = gt_boxes.unsqueeze(1).repeat(1, self.cfg.MODEL.ROI_BOX_HEAD.NUM_CLASSES, 1)
                 #     target.add_field('boxes_all', gt_pseudo_boxes_all)
-            
+
             if self.cfg.MODEL.ROI_RELATION_HEAD.SEPERATE_SO_FEATURE_EXTRACTOR:
                 gt_subj_features = self.subj_feature_extractor(features, targets, use_relu=False)
                 if gt_subj_features.ndimension() == 4:
@@ -307,7 +307,7 @@ class SceneParser(GeneralizedRCNN):
                 for target, gt_subj_feature, gt_feature in zip(targets, gt_subj_features, gt_features):
                     target.add_field('subj_box_features', gt_subj_feature)
                     target.add_field('obj_box_features', gt_feature)
-                
+
         # if not self.cfg.MODEL.ROI_RELATION_HEAD.SHARE_CONV_BACKBONE:
         #     features = self.rel_backbone(images.tensors)
         # else:

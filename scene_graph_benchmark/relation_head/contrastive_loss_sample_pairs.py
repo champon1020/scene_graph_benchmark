@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 
 import torch
 from torch.nn import functional as F
@@ -19,8 +19,8 @@ def add_rel_blobs(cfg, blobs, proposals, targets):
         for k, v in blob.items():
             if isinstance(v, list) and len(v) > 0:
                 blob[k] = np.concatenate(v)
-               
-        # # ignore FPN setting 
+
+        # # ignore FPN setting
         # if cfg.FPN.FPN_ON and cfg.FPN.MULTILEVEL_ROIS:
         #     _add_rel_multilevel_rois(blobs)
 
@@ -47,7 +47,7 @@ def _sample_pairs(cfg, proposals_per_image, targets_per_image):
     gt_pair_inds = np.where(max_pair_overlaps > 1.0 - 1e-4)[0]
     fg_pair_inds = np.where((max_pair_overlaps >= cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.FG_THRESH) &
                             (max_pair_overlaps <= 1.0 - 1e-4))[0]
-    
+
     fg_pairs_per_this_image = np.minimum(fg_pairs_per_image, gt_pair_inds.size + fg_pair_inds.size)
     # Sample foreground regions without replacement
     if fg_pair_inds.size > 0 and fg_pairs_per_this_image > gt_pair_inds.size:
@@ -61,7 +61,7 @@ def _sample_pairs(cfg, proposals_per_image, targets_per_image):
         fg_prd_labels_int32=fg_prd_labels.astype(np.int32, copy=False))
     if cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.USE_BG:
         bg_pair_inds = np.where((max_pair_overlaps < cfg.MODEL.ROI_RELATION_HEAD.CONTRASTIVE_LOSS.BG_THRESH_HI))[0]
-        
+
         # Compute number of background RoIs to take from this image (guarding
         # against there being fewer than desired)
         bg_pairs_per_this_image = pairs_per_image - fg_pairs_per_this_image
@@ -70,7 +70,7 @@ def _sample_pairs(cfg, proposals_per_image, targets_per_image):
         if bg_pair_inds.size > 0:
             bg_pair_inds = npr.choice(
                 bg_pair_inds, size=bg_pairs_per_this_image, replace=False)
-#         logger.info('{} : {}'.format(fg_pair_inds.size, bg_pair_inds.size))  
+#         logger.info('{} : {}'.format(fg_pair_inds.size, bg_pair_inds.size))
         keep_pair_inds = np.append(fg_pair_inds, bg_pair_inds)
         all_prd_labels = np.zeros(keep_pair_inds.size, dtype=np.int32)
         all_prd_labels[:fg_pair_inds.size] = fg_prd_labels + 1  # class should start from 1
@@ -154,7 +154,7 @@ def _sample_pairs(cfg, proposals_per_image, targets_per_image):
         # this is for freq bias in RelDN
         blob_dict['sbj_labels_sbj_pos_fg_int32'] = targets_per_image.get_field('max_sbj_classes')[sbj_pos_inds].astype(np.int32, copy=False)
         blob_dict['obj_labels_sbj_pos_fg_int32'] = targets_per_image.get_field('max_obj_classes')[sbj_pos_inds].astype(np.int32, copy=False)
-        
+
         sampled_sbj_boxes_sbj_pos = targets_per_image.get_field('sbj_boxes')[sbj_pos_inds]
         sampled_obj_boxes_sbj_pos = targets_per_image.get_field('obj_boxes')[sbj_pos_inds]
         # Scale rois and format as (x1, y1, x2, y2)
@@ -221,7 +221,7 @@ def _sample_pairs(cfg, proposals_per_image, targets_per_image):
         # this is for freq bias in RelDN
         blob_dict['sbj_labels_obj_pos_fg_int32'] = targets_per_image.get_field('max_sbj_classes')[obj_pos_inds].astype(np.int32, copy=False)
         blob_dict['obj_labels_obj_pos_fg_int32'] = targets_per_image.get_field('max_obj_classes')[obj_pos_inds].astype(np.int32, copy=False)
-        
+
         sampled_sbj_boxes_obj_pos = targets_per_image.get_field('sbj_boxes')[obj_pos_inds]
         sampled_obj_boxes_obj_pos = targets_per_image.get_field('obj_boxes')[obj_pos_inds]
         # Scale rois and format as (x1, y1, x2, y2)
@@ -328,7 +328,7 @@ def _merge_paired_boxes_into_roidb(proposals, targets, sbj_box_list, obj_box_lis
         pair_to_gt_ind_map = -np.ones(
             (num_pairs), dtype=targets_per_image.get_field('pair_to_gt_ind_map').cpu().numpy().dtype
         )
-        
+
         pair_gt_inds = np.arange(targets_per_image.get_field('prd_gt_classes_minus_1').shape[0])
         if len(pair_gt_inds) > 0:
             sbj_gt_boxes = targets_per_image.get_field('sbj_gt_boxes').cpu().numpy()[pair_gt_inds, :]
@@ -351,11 +351,11 @@ def _merge_paired_boxes_into_roidb(proposals, targets, sbj_box_list, obj_box_lis
             sbj_argmaxes = sbj_to_gt_overlaps.argmax(axis=1)
             sbj_maxes = sbj_to_gt_overlaps.max(axis=1)  # Amount of that overlap
             sbj_I = np.where(sbj_maxes >= 0)[0]  # Those boxes with non-zero overlap with gt boxes, get all items
-            
+
             obj_argmaxes = obj_to_gt_overlaps.argmax(axis=1)
             obj_maxes = obj_to_gt_overlaps.max(axis=1)  # Amount of that overlap
             obj_I = np.where(obj_maxes >= 0)[0]  # Those boxes with non-zero overlap with gt boxes, get all items
-            
+
             pair_argmaxes = pair_to_gt_overlaps.argmax(axis=1)
             pair_maxes = pair_to_gt_overlaps.max(axis=1)  # Amount of that overlap
             pair_I = np.where(pair_maxes >= 0)[0]  # Those boxes with non-zero overlap with gt boxes, get all items
