@@ -32,7 +32,6 @@ dist/
 .DS_Store
 
 # project dirs
-/datasets
 /models
 /output
 /exps
@@ -41,6 +40,14 @@ dist/
 pretrained_model/
 run_philly.py
 vrd_philly_tools_submit.yaml
+
+datasets/visualgenome/*
+datasets/actiongenome/*
+datasets/glove
+!datasets/visualgenome/train_danfeiX_relation_nm.yaml
+!datasets/visualgenome/test_danfeiX_relation.yaml
+!datasets/actiongenome/train.yaml
+!datasets/actiongenome/test.yaml
 
 tools/actiongenome/data
 tools/actiongenome/ag/annotations/*
