@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 # Set up custom environment before nearly anything else is imported
 # NOTE: this should be the first import (no not reorder)
 from maskrcnn_benchmark.utils.env import setup_environment  # noqa F401 isort:skip
@@ -183,6 +183,9 @@ def main():
     elif cfg.MODEL.META_ARCHITECTURE == "AttrRCNN":
         model = AttrRCNN(cfg)
     model.to(cfg.MODEL.DEVICE)
+
+    n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print("Number of params:", n_parameters)
 
     output_dir = cfg.OUTPUT_DIR
     checkpointer = DetectronCheckpointer(cfg, model, save_dir=output_dir)
