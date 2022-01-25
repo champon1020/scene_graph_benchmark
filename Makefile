@@ -5,3 +5,11 @@ visualize_ag_reldn:
 		--img_file demo/ag_demo.png \
 		--save_file ./results/ag/reldn/ag_demo.png \
 		--visualize_relation DATASETS.LABELMAP_FILE "actiongenome/labelmap.json"
+
+.PHONY: visualize_ag_nm
+visualize_ag_nm:
+	python tools/demo/demo_image.py \
+		--config_file sgg_configs/ag_vrd/rel_danfeiX_FPN50_nm.yaml \
+		--img_file demo/ag_demo.png \
+		--save_file ./results/ag/nm/ag_demo.png \
+		--visualize_relation DATASETS.LABELMAP_FILE "actiongenome/labelmap.json"
