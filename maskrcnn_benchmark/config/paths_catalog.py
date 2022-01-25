@@ -7,6 +7,14 @@ from copy import deepcopy
 class DatasetCatalog(object):
     DATA_DIR = "datasets"
     DATASETS = {
+        "actiongenome_coco_train": {
+            "img_dir": "actiongenome_coco/train",
+            "ann_file": "actiongenome_coco/annotations/instances_train2017.json"
+        },
+        "actiongenome_coco_val": {
+            "img_dir": "actiongenome_coco/val",
+            "ann_file": "actiongenome_coco/annotations/instances_val2017.json"
+        },
         "coco_2017_train": {
             "img_dir": "coco/train2017",
             "ann_file": "coco/annotations/instances_train2017.json"

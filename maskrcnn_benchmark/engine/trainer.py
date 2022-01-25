@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 import datetime
 import logging
 import os
@@ -76,9 +76,9 @@ def do_train(
     for iteration, data_batch in enumerate(data_loader, start_iter):
 
         images, targets, image_ids, scales = data_batch[0], data_batch[1], data_batch[2], data_batch[3:]
-        
+
         if any(len(target) < 1 for target in targets):
-            logger.error(f"Iteration={iteration + 1} || Image Ids used for training {_} || targets Length={[len(target) for target in targets]}" )
+            logger.error(f"Iteration={iteration + 1} || Image Ids used for training {image_ids} || targets Length={[len(target) for target in targets]}" )
             continue
         data_time = time.time() - end
         iteration = iteration + 1

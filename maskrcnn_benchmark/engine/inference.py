@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license. 
+# Copyright (c) 2021 Microsoft Corporation. Licensed under the MIT license.
 import imp
 import logging
 import time
@@ -109,7 +109,7 @@ def convert_predictions_to_tsv(predictions, dataset, output_folder,
             relation_labelmap = dataset.ind_to_relation
         else:
             raise ValueError("relation labelmap is required, but was not provided")
-    
+
     def gen_rows():
         for idx, prediction in sorted(predictions.items()):
             image_key = dataset.get_img_key(idx)
@@ -187,7 +187,7 @@ def convert_predictions_to_tsv(predictions, dataset, output_folder,
                         cur_d['attr_scores_all'] = base64.b64encode(attr_scores_all[i]) \
                             .decode('utf-8')
                 objects.append(cur_d)
-            
+
             triplets = None
             if relation_on:
                 triplets = []
@@ -205,9 +205,9 @@ def convert_predictions_to_tsv(predictions, dataset, output_folder,
                         if name == 'relation_feature':
                             cur_d['relation_feature'] = base64.b64encode(relation_features[i]).decode('utf-8')
                     triplets.append(cur_d)
-            
+
             yield image_key, json.dumps({'objects': objects, 'relations':triplets})
-    
+
     tsv_writer(gen_rows(), os.path.join(output_folder, output_tsv_name))
 
 
@@ -285,7 +285,7 @@ def inference(
 
     if output_folder and save_predictions:
         torch.save(predictions, os.path.join(output_folder, output_pth_name))
-    
+
     if output_folder and cfg.TEST.SAVE_RESULTS_TO_TSV:
         logger.info("Convert prediction results to tsv format and save.")
         output_tsv_name = 'predictions_forcebox.tsv' if eval_attributes else 'predictions.tsv'
@@ -296,7 +296,7 @@ def inference(
             output_tsv_name=output_tsv_name,
             relation_on=cfg.MODEL.RELATION_ON,
         )
-    
+
     if skip_performance_eval:
         logger.info("Skip performance evaluation and return.")
         return
