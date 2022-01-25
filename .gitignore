@@ -43,6 +43,7 @@ vrd_philly_tools_submit.yaml
 
 datasets/visualgenome/*
 datasets/actiongenome/*
+datasets/actiongenome_coco/*
 datasets/glove
 !datasets/visualgenome/train_danfeiX_relation_nm.yaml
 !datasets/visualgenome/test_danfeiX_relation.yaml
