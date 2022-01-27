@@ -1,6 +1,6 @@
 MODEL:
   META_ARCHITECTURE: "SceneParser"
-  WEIGHT: "models/ag/reldn/model_final.pth"
+  WEIGHT: "models/ag/model_final.pth"
   USE_FREQ_PRIOR: False
   FREQ_PRIOR: "actiongenome/train.label.freq_prior.npy"
   RESNETS:
