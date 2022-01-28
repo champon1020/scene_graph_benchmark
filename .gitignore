@@ -43,12 +43,16 @@ vrd_philly_tools_submit.yaml
 
 datasets/visualgenome/*
 datasets/actiongenome/*
-datasets/actiongenome_coco/*
+datasets/homeactiongenome/*
+datasets/actiongenome_coco
+datasets/homeactiongenome_coco
 datasets/glove
 !datasets/visualgenome/train_danfeiX_relation_nm.yaml
 !datasets/visualgenome/test_danfeiX_relation.yaml
 !datasets/actiongenome/train.yaml
 !datasets/actiongenome/test.yaml
+!datasets/homeactiongenome/train.yaml
+!datasets/homeactiongenome/test.yaml
 
 tools/actiongenome/data
 tools/actiongenome/ag/annotations/*

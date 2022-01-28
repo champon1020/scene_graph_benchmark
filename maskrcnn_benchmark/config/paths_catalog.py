@@ -15,6 +15,14 @@ class DatasetCatalog(object):
             "img_dir": "actiongenome_coco/val",
             "ann_file": "actiongenome_coco/annotations/instances_val2017.json"
         },
+        "homeactiongenome_coco_train": {
+            "img_dir": "homeactiongenome_coco/train",
+            "ann_file": "homeactiongenome_coco/annotations/instances_train2017.json"
+        },
+        "homeactiongenome_coco_val": {
+            "img_dir": "homeactiongenome_coco/val",
+            "ann_file": "homeactiongenome_coco/annotations/instances_val2017.json"
+        },
         "coco_2017_train": {
             "img_dir": "coco/train2017",
             "ann_file": "coco/annotations/instances_train2017.json"
