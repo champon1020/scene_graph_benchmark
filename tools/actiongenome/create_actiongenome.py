@@ -11,20 +11,21 @@ from maskrcnn_benchmark.structures.tsv_file_ops import (generate_linelist_file,
                                                         tsv_writer)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--ag_path", type=str, default="tools/actiongenome/ag")
+parser.add_argument("--root_dir", type=str, default="tools/actiongenome/ag")
+parser.add_argument("--dst_dir", type=str, required=True)
 parser.add_argument("--image_set", choices=["train", "test"], default="train")
 args = parser.parse_args()
 
-data_path = args.ag_path
+data_path = args.root_dir
 with open(op.join(data_path, "annotations/frame_list.txt"), "r") as f:
     lines = f.readlines()
     img_list = [line.rstrip() for line in lines]
 
-tsv_file = f"./datasets/actiongenome/{args.image_set}.img.tsv"
-label_file = f"datasets/actiongenome/{args.image_set}.label.tsv"
-hw_file = f"datasets/actiongenome/{args.image_set}.hw.tsv"
-linelist_file = f"datasets/actiongenome/{args.image_set}.linelist.tsv"
-labelmap_file = "datasets/actiongenome/labelmap.json"
+tsv_file = op.join(args.dst_dir, f"{args.image_set}.img.tsv")
+label_file = op.join(args.dst_dir, f"{args.image_set}.label.tsv")
+hw_file = op.join(args.dst_dir, f"{args.image_set}.hw.tsv")
+linelist_file = op.join(args.dst_dir, f"{args.image_set}.linelist.tsv")
+labelmap_file = op.join(args.dst_dir, "labelmap.json")
 
 label_to_idx, idx_to_label = {}, {}
 with open(op.join(data_path, "annotations/object_classes.txt"), "r") as f:
