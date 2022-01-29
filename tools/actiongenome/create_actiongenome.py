@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--root_dir", type=str, default="tools/actiongenome/ag")
 parser.add_argument("--dst_dir", type=str, required=True)
 parser.add_argument("--image_set", choices=["train", "test"], default="train")
+parser.add_argument("--image_ext", choices=[".jpg", ".png"], default=".jpg")
 args = parser.parse_args()
 
 data_path = args.root_dir
@@ -60,11 +61,10 @@ object_bbox_and_relationship = pickle.load(
 rows = []
 rows_label = []
 rows_hw = []
-for img_p in tqdm(img_list):
-    img_key = img_p.split(".")[0]
+for i, img_p in enumerate(tqdm(img_list)):
     img_path = op.join(data_path, "frames", img_p)
     img = cv2.imread(img_path)
-    img_encoded_str = base64.b64encode(cv2.imencode(".jpg", img)[1])
+    img_encoded_str = base64.b64encode(cv2.imencode(args.image_ext, img)[1])
 
     # labels.tsv
     labels = {"objects": [], "relations": []}
@@ -124,16 +124,16 @@ for img_p in tqdm(img_list):
     if len(labels["objects"]) == 0 or len(labels["relations"]) == 0:
         continue
 
-    row_label = [img_key, json.dumps(labels)]
+    row_label = [str(i), json.dumps(labels)]
     rows_label.append(row_label)
 
     # img.tsv
-    row = [img_key, img_encoded_str]
+    row = [str(i), img_encoded_str]
     rows.append(row)
 
     # hw.tsv
     w, h = person["bbox_size"]
-    row_hw = [img_key, json.dumps([{"height": h, "width": w}])]
+    row_hw = [str(i), json.dumps([{"height": h, "width": w}])]
     rows_hw.append(row_hw)
 
 tsv_writer(rows, tsv_file)
